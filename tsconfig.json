@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "paths": { "*": ["types/*"] },
+    "allowJs": true,
+    "baseUrl": ".",
+    "declaration": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": ["dom", "es2017", "es5", "es6"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noUnusedLocals": false,
+    "outDir": "build/src",
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2017",
+    "typeRoots": ["node_modules/@types"]
+  },
+  "exclude": ["node_modules", "src/**/*.generated.ts", "src/**/*.spec.ts"],
+  "include": ["src/**/*"]
+}
