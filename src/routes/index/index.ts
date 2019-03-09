@@ -3,12 +3,12 @@
  * Owlsome solutions. Owltstanding results.
  */
 
-import { createRoute, server } from "../../server";
+import { createRoute, router } from "../../server";
 
 //
 // fuck you prettier!
 // prettier-ignore
-server.use("/", async(req, res): Promise<any> => {
+router.use("/", async(req, res): Promise<any> => {
   return res.jsonp({
     data: null,
     query: req.query,
