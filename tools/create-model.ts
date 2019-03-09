@@ -92,10 +92,6 @@ async function generate(relname: string) {
   const pwdM = resolve(__dirname, "../src/models", dirname(filename));
   const pwdS = resolve(__dirname, "../src/schemas", dirname(filename));
 
-  // tslint:disable-next-line no-console
-  console.log(pwdS.replace(/.*src\/(.+)/, "$1"));
-  // `import schema from "${pathname}schemas/${basename(filename)}";`,
-
   const classname = camelize(
     filename.indexOf("/") === -1 ? filename : filename.split("/")[1],
     true,
@@ -103,7 +99,6 @@ async function generate(relname: string) {
 
   const jsonSchema: any = {
     properties: {},
-    type: "object",
   };
 
   const template = [
@@ -194,8 +189,11 @@ async function generate(relname: string) {
         " * Owlsome solutions. Owltstanding results.",
         " */",
         "",
-        "export default ",
-        JSON.stringify(jsonSchema, null, "  "),
+        "export default { properties: ",
+        JSON.stringify(jsonSchema.properties, null, "  // ")
+          .replace(/\/\/   \/\/ "type"/g, "//   type")
+          .replace(/\/\/ "([a-z]+)": \{/gi, "// $1: {"),
+        ",type: 'object', }",
       ].join("\n");
 
       const s = resolve(pwdS, basename(filename));
