@@ -118,6 +118,7 @@ async function generate(relname: string) {
   await knex.raw(sql, [relname]).then(({ rows }) => {
     template.push(`export default class ${classname} extends Model {`);
 
+    // tslint:disable no-console max-line-length
     template.push(
       `public static readonly jsonSchema = schema;`,
       `public static readonly tableName = "${rows[0].nspname}.${relname}";\n`,
@@ -126,6 +127,7 @@ async function generate(relname: string) {
       " */",
       "// public static readonly relationMappings = {};\n",
     );
+    // tslint:enable
 
     rows.map((row: any) => {
       const property = camelize(row.colname);
@@ -135,15 +137,11 @@ async function generate(relname: string) {
       };
     });
 
-    // template.push("\npublic static readonly jsonSchema = jsonSchema");
-    // template.push(JSON.stringify(jsonSchema, null, "  "));
-    // template.push("");
-
     rows.map((row: any) => {
       const column = ["public ", camelize(row.colname)];
 
       if (row.type === "bool") {
-        column.push(`=${row.defaultValue === "true" ? "true" : "false"}`);
+        column.push("!:boolean");
 
         return template.push(column.join(""));
       }
@@ -163,13 +161,9 @@ async function generate(relname: string) {
       }
 
       if (types.typescript[row.type]) {
-        if (row.type === "bool") {
-          column.push(`: ${row.defaultValue === "true" ? "true" : "false"};`);
-        } else {
-          column.push(`: ${types.typescript[row.type]};`);
-        }
+        column.push(`: ${types.typescript[row.type]};`);
       } else {
-        column.push(`: "string"; // undefined type \`${row.type}\``);
+        column.push(`: string; // undefined type \`${row.type}\``);
       }
 
       template.push(column.join(""));

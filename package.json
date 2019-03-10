@@ -74,7 +74,7 @@
     "create:model": "ts-node tools/create-model",
     "format": "concurrently yarn:~prettier:* && concurrently 'yarn:~format:*'",
     "lint": "concurrently yarn:~lint:*",
-    "postcreate:model": "yarn ~prettier:typescript",
+    "postcreate:model": "yarn ~prettier:ts",
     "prebuild": "yarn test",
     "pretest": "yarn lint",
     "start": "nodemon -w src --ignore '*.spec.ts' -x ts-node -T --pretty src/index.ts",
