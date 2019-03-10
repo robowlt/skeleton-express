@@ -5,10 +5,24 @@
 
 import { Model } from "objection";
 import { knex } from "./knex";
-import { server } from "./server";
+import { addRouteFromPath, server } from "./server";
 
 import "./error-handler";
-import "./routes/index";
+
+addRouteFromPath("example");
+
+//
+// here, `addRouteFromPath("example")` is the same
+// as `import "./routes/example";`
+// where `./routes/example` makes a call
+// to `createRoute("example", { handlers })`:
+//
+// createRoute("example", {
+//   async index(req: Request, res: Response): Promise<Response> {
+//     return res.jsonp("this was called using `createRoute`");
+//   }
+// });
+//
 
 server.use(
   async(_, res): Promise<any> => {

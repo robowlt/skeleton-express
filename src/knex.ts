@@ -8,13 +8,11 @@ import { knexSnakeCaseMappers } from "objection";
 import { APP_ENV, APP_PRODUCTION } from "./environment";
 
 const APP_KNEX_DEFAULTS: Knex.Config = {
+  ...knexSnakeCaseMappers(),
   asyncStackTraces: !APP_PRODUCTION,
   client: "pg",
   connection: `${process.env.DATABASE_URL}?ssl=true`,
   debug: !APP_PRODUCTION,
-  wrapIdentifier: (value, origImpl) => {
-    return knexSnakeCaseMappers().wrapIdentifier(value, origImpl);
-  },
 };
 
 const APP_KNEX_CONFIG: { [key: string]: Knex.Config } = {

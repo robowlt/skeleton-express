@@ -20,7 +20,32 @@ export const server = express()
   .use(bodyParser.json({ strict: true, type: "application/json" }))
   .use(compression())
   .use(helmet())
-  .use(morgan("dev"))
+  .use(
+    morgan((tokens, req, res) => {
+      let statusColor = "32m"; // green
+
+      if (res.statusCode > 299) {
+        statusColor = "36m"; // cyan
+      }
+
+      if (res.statusCode > 399) {
+        statusColor = "33m"; // yellow
+      }
+
+      if (res.statusCode > 499) {
+        statusColor = "31m"; // red
+      }
+
+      return [
+        `\x1b[0;${statusColor}[${tokens.date(req, res)}]\x1b[0m`,
+        tokens.res(req, res, "content-length"),
+        tokens.status(req, res),
+        tokens.method(req, res),
+        tokens.url(req, res),
+        tokens.res(req, res, "user-agent"),
+      ].join(" ");
+    }),
+  )
   .use(router);
 
 if (existsSync(`${APP_PWD}/src/middlewares.js`)) {
@@ -70,7 +95,7 @@ export function createRoute(
     }
 
     //
-    // implicitly cast to `any` because type 'Router' has no
+    // implicitly cast to `any` because 'Router' has no
     // index signature
     (router as any)[method](`/${path.replace(/\/index$/, "")}`, handler);
   });
