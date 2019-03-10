@@ -30,20 +30,39 @@ if (existsSync(`${APP_PWD}/src/middlewares.js`)) {
   mws.forEach((mw) => router.use(mw));
 }
 
+/**
+ * Import `RequestHandler`'s from the given `fileOrPath`.
+ *
+ * @param fileOrPath file or path inside the `routes` directory
+ */
+export function addRouteFromPath(fileOrPath: string): void {
+  const { endpoint, handlers } = importHandlers(fileOrPath);
+
+  return createRoute(endpoint || fileOrPath, handlers);
+}
+
+/**
+ * Add the given `RequestHandler`'s within `endpoit`.
+ *
+ * @param endpoint
+ * @param handlers
+ */
 export function createRoute(
-  path: string | string[],
+  endpoint: string | string[],
   handlers: { [method: string]: express.RequestHandler },
 ) {
   Object.keys(handlers).forEach((method) => {
     const handler = handlers[method];
-    let $path = path;
+    let path = endpoint;
 
-    if (Array.isArray(path)) {
-      if (["delete", "get", "patch"].includes(method)) {
-        $path = path.join("/");
-      } else {
-        $path = path[0];
-      }
+    if (!Array.isArray(path)) {
+      path = [path, ":id"];
+    }
+
+    if (["delete", "get", "patch"].includes(method)) {
+      path = path.join("/");
+    } else {
+      path = path[0];
     }
 
     if (method === "index") {
@@ -53,6 +72,18 @@ export function createRoute(
     //
     // implicitly cast to `any` because type 'Router' has no
     // index signature
-    (router as any)[method]($path, handler);
+    (router as any)[method](`/${path.replace(/\/index$/, "")}`, handler);
   });
+}
+
+/**
+ * @internal
+ */
+function importHandlers(
+  filename: string,
+): {
+  endpoint?: string | string[];
+  handlers: { [method: string]: express.RequestHandler };
+} {
+  return require(`./routes/${filename}`);
 }
