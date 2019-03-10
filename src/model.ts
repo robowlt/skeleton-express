@@ -41,10 +41,12 @@ export class Model extends DbErrors(M) {
    * the insert and reject the query. This can be useful if you
    * need to do insert specific validation.
    */
-  public async $beforeInsert(q: QueryContext): Promise<any> {
-    return Promise.resolve(this.$beforeSave(q)).then(() => {
-      return super.$beforeInsert(q);
-    });
+  public async $beforeInsert(
+    queryContext: QueryContext,
+  ): Promise<QueryContext> {
+    // prettier-ignore
+    return Promise.resolve(this.$beforeSave(queryContext))
+      .then(() => super.$beforeInsert(queryContext));
   }
 
   /**
@@ -55,10 +57,13 @@ export class Model extends DbErrors(M) {
    * the update and reject the query. This can be useful if you
    * need to do update specific validation.
    */
-  public async $beforeUpdate(o: ModelOptions, q: QueryContext): Promise<any> {
-    return Promise.resolve(this.$beforeSave(q)).then(() => {
-      return super.$beforeUpdate(o, q);
-    });
+  public async $beforeUpdate(
+    modelOptions: ModelOptions,
+    queryContext: QueryContext,
+  ): Promise<QueryContext> {
+    // prettier-ignore
+    return Promise.resolve(this.$beforeSave(queryContext, modelOptions))
+      .then(() => super.$beforeUpdate(modelOptions, queryContext));
   }
 
   /**
@@ -68,7 +73,11 @@ export class Model extends DbErrors(M) {
    * asynchronous stuff. You can also throw an exception to abort
    * the save and reject the query.
    */
-  protected $beforeSave(q: QueryContext): Promise<any> {
-    return Promise.resolve(q);
+  protected async $beforeSave(
+    queryContext: QueryContext,
+    modelOptions?: ModelOptions,
+  ): Promise<{ queryContext: QueryContext; modelOptions?: ModelOptions }> {
+    // prettier-ignore
+    return Promise.resolve({ queryContext, modelOptions });
   }
 }
