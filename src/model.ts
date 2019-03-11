@@ -3,11 +3,20 @@
  * Owlsome solutions. Owltstanding results.
  */
 
-import { Model as M, ModelOptions, QueryContext } from "objection";
+import {
+  Model as M,
+  ModelOptions,
+  QueryContext,
+  snakeCaseMappers,
+} from "objection";
 import { DbErrors } from "objection-db-errors";
 import { FindQueryBuilder } from "objection-find";
 
 export class Model extends DbErrors(M) {
+  public static get columnNameMappers() {
+    return snakeCaseMappers();
+  }
+
   /**
    * Build search queries for models using HTTP query parameters.
    *
@@ -16,12 +25,6 @@ export class Model extends DbErrors(M) {
   public static findQuery(): FindQueryBuilder {
     return new FindQueryBuilder(this);
   }
-
-  /**
-   * Used to describe resource objects that share common
-   * attributes and relationships.
-   */
-  public readonly $type!: string;
 
   /**
    * Exports this model as a JSON object.

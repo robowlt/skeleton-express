@@ -69,8 +69,8 @@
   "license": "MIT",
   "name": "@dl2/skeleton-express",
   "scripts": {
-    "build": "ts-node tools/copy-files && tsc",
-    "build:fast": "ts-node tools/copy-files && tsc",
+    "build": "yarn ~copy-files && tsc",
+    "build:fast": "yarn ~copy-files && tsc",
     "create:model": "ts-node tools/create-model",
     "format": "concurrently yarn:~prettier:* && concurrently 'yarn:~format:*'",
     "lint": "concurrently yarn:~lint:*",
@@ -79,6 +79,7 @@
     "pretest": "yarn lint",
     "start": "nodemon -w src --ignore '*.spec.ts' -x ts-node -T --pretty src/index.ts",
     "test": "NODE_ENV=test jest",
+    "~copy-files": "ts-node tools/copy-files",
     "~format:js": "yarn ~lint:js --fix",
     "~format:styles": "yarn ~lint:styles --fix",
     "~format:ts": "yarn ~lint:ts --fix",
@@ -86,7 +87,7 @@
     "~lint:styles": "stylelint 'src/**/*.scss'",
     "~lint:ts": "tslint -p tsconfig.json",
     "~prettier": "prettier --arrow-parens always --print-width 79 --trailing-comma all --write",
-    "~prettier:others": "yarn ~prettier --single-quote '**/*.?(html|js|json)'",
+    "~prettier:others": "yarn ~prettier --single-quote '**/*.?(js|json)'",
     "~prettier:ts": "yarn ~prettier --parser typescript '**/*.ts'"
   },
   "version": "0.0.0"
