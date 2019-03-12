@@ -5,16 +5,9 @@
 
 // tslint:disable:max-classes-per-file
 declare module "objection-find" {
-  import {
-    Model,
-    ModelClass,
-    QueryBuilder,
-    RelationExpression,
-  } from "objection";
+  import { Model, QueryBuilder, RelationExpression } from "objection";
 
-  export default function findQuery<M extends typeof Model>(
-    ModelClass: typeof Model,
-  ): FindQueryBuilder;
+  export default function findQuery(modelClass: any): FindQueryBuilder;
 
   export interface RegisterFilter {
     args: any;
@@ -28,7 +21,7 @@ declare module "objection-find" {
    * @see https://github.com/Vincit/objection-find
    */
   export class FindQueryBuilder {
-    constructor(modelClass: typeof Model);
+    constructor(modelClass: any);
 
     /**
      * Use this method to whitelist property references.
@@ -58,10 +51,10 @@ declare module "objection-find" {
     /**
      * Builds the find query for the given query parameters.
      */
-    public build(
+    public build<QM extends Model>(
       params: any,
-      builder?: QueryBuilder<Model>,
-    ): QueryBuilder<Model>;
+      builder?: QueryBuilder<QM>,
+    ): QueryBuilder<QM>;
 
     /**
      * Registers a filter function.

@@ -4,7 +4,7 @@
  */
 
 import {
-  Model as M,
+  Model as ObjectionModel,
   ModelOptions,
   QueryContext,
   snakeCaseMappers,
@@ -12,7 +12,7 @@ import {
 import { DbErrors } from "objection-db-errors";
 import { FindQueryBuilder } from "objection-find";
 
-export class Model extends DbErrors(M) {
+export class Model extends DbErrors(ObjectionModel) {
   public static get columnNameMappers() {
     return snakeCaseMappers();
   }
@@ -23,7 +23,9 @@ export class Model extends DbErrors(M) {
    * @see https://github.com/Vincit/objection-find
    */
   public static findQuery(): FindQueryBuilder {
-    return new FindQueryBuilder(this);
+    return new FindQueryBuilder(this)
+      .specialParameter("eager", "includes")
+      .specialParameter("orderBy", "sort");
   }
 
   /**
