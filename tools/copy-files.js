@@ -17,6 +17,10 @@ const next = process.env.NEXT
 
 emptyDir(outputDir)
   .then(() => ensureDir(outputDir))
+
+  /**
+   * create package.json
+   */
   .then(() => {
     const {
       authors,
@@ -35,15 +39,29 @@ emptyDir(outputDir)
       license,
       name,
       scripts: {
-        start: 'node src/index.js',
+        start: "NODE_ICU_DATA='./node_modules/full-icu' node src/index.js",
       },
       version: next,
     };
 
     return writeJson(`${outputDir}/package.json`, j, { spaces: 2 });
   })
+
+  /**
+   * bump `version` (if requested)
+   */
   .then(() => {
     const j = Object.assign(packages, { version: next });
 
     return writeJson(`${sourceDir}/package.json`, j, { spaces: 2 });
+  })
+
+  /**
+   * copy template files
+   */
+  .then(() => {
+    const output = '/src/templates';
+
+    // return copy(`${sourceDir}${output}`, `${outputDir}${output}`);
+    return output;
   });

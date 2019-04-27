@@ -3,32 +3,20 @@
  * Owlsome solutions. Owltstanding results.
  */
 
+import { Request, Response } from "express";
+import "full-icu";
 import { Model } from "objection";
-import { knex } from "./knex";
-import { addRouteFromPath, server } from "./server";
-
 import "./error-handler";
+import { knex } from "./knex";
+import { addRoutesFromPath, server } from "./server";
 
-addRouteFromPath("example");
+addRoutesFromPath("index");
 
 //
-// here, `addRouteFromPath("example")` is the same
-// as `import "./routes/example";`
-// where `./routes/example` makes a call
-// to `createRoute("example", { handlers })`:
-//
-// createRoute("example", {
-//   async index(req: Request, res: Response): Promise<Response> {
-//     return res.jsonp("this was called using `createRoute`");
-//   }
-// });
-//
-
+// handle 404 errors
 server.use(
-  async(_, res): Promise<any> => {
-    return res.status(404).jsonp({
-      message: "Not Found",
-    });
+  async(req: Request, _: Response): Promise<Response> => {
+    return req.NotFound();
   },
 );
 

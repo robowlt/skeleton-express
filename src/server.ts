@@ -5,12 +5,14 @@
 
 import * as bodyParser from "body-parser";
 import * as compression from "compression";
+import * as cors from "cors";
+import { Request, Response } from "express";
 import * as express from "express";
 import PromiseRouter from "express-promise-router";
-import { existsSync } from "fs";
 import * as helmet from "helmet";
 import morgan = require("morgan");
-import { APP_PWD } from "./environment";
+import { APP_PRODUCTION } from "./environment";
+import middlewares from "./middlewares";
 
 export const router = PromiseRouter();
 export const server = express()
@@ -19,6 +21,7 @@ export const server = express()
   .set("trust proxy", 1)
   .use(bodyParser.json({ strict: true, type: "application/json" }))
   .use(compression())
+  .use(cors())
   .use(helmet())
   .use(
     morgan((tokens, req, res) => {
@@ -38,21 +41,34 @@ export const server = express()
 
       return [
         `\x1b[0;${statusColor}[${tokens.date(req, res)}]\x1b[0m`,
-        tokens.res(req, res, "content-length"),
+        // tokens.res(req, res, "content-length"),
         tokens.status(req, res),
         tokens.method(req, res),
         tokens.url(req, res),
-        tokens.res(req, res, "user-agent"),
+        tokens["user-agent"](req, res),
       ].join(" ");
     }),
   )
+  .use(async(_, r, n) => {
+    if (!APP_PRODUCTION) {
+      r.set("Cache-Control", "no-store,no-cache,must-revalidate,private");
+    }
+
+    return n();
+  })
   .use(router);
 
-if (existsSync(`${APP_PWD}/src/middlewares.js`)) {
-  // tslint:disable-next-line no-var-requires
-  const mws: express.RequestHandler[] = require(`${APP_PWD}/src/middlewares.js`);
+middlewares.forEach((mw) => router.use(mw));
 
-  mws.forEach((mw) => router.use(mw));
+export function ensureIdentity(
+  req: Request,
+  res: Response,
+): Promise<string | Response> {
+  if (req.identity) {
+    return Promise.resolve("next");
+  }
+
+  return req.Forbidden(401);
 }
 
 /**
@@ -60,7 +76,7 @@ if (existsSync(`${APP_PWD}/src/middlewares.js`)) {
  *
  * @param fileOrPath file or path inside the `routes` directory
  */
-export function addRouteFromPath(fileOrPath: string): void {
+export function addRoutesFromPath(fileOrPath: string): void {
   const { endpoint, handlers } = importHandlers(fileOrPath);
 
   return createRoute(endpoint || fileOrPath, handlers);
@@ -76,8 +92,15 @@ export function createRoute(
   endpoint: string | string[],
   handlers: { [method: string]: express.RequestHandler },
 ) {
+  //
+  const { $beforeAll } = handlers;
+
   Object.keys(handlers).forEach((method) => {
-    const handler = handlers[method];
+    if ("$beforeAll" === method) {
+      return true;
+    }
+
+    const handler: express.RequestHandler = handlers[method];
     let path = endpoint;
 
     if (!Array.isArray(path)) {
@@ -94,10 +117,13 @@ export function createRoute(
       method = "get";
     }
 
-    //
-    // implicitly cast to `any` because 'Router' has no
-    // index signature
-    (router as any)[method](`/${path.replace(/\/index$/, "")}`, handler);
+    path = `/${path.replace(/\/index$/, "")}`;
+
+    if (!$beforeAll || typeof $beforeAll !== "function") {
+      (router as any)[method](path, ensureIdentity, handler);
+    } else {
+      (router as any)[method](path, $beforeAll, handler);
+    }
   });
 }
 

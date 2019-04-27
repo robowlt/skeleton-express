@@ -5,6 +5,4 @@
 *.transpiled.jsx
 /build
 /node_modules
-/src/models
-/src/schemas
 /stats.json

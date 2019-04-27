@@ -7,37 +7,31 @@ import {
   Model as ObjectionModel,
   ModelOptions,
   QueryContext,
-  snakeCaseMappers,
+  raw,
 } from "objection";
 import { DbErrors } from "objection-db-errors";
-import { FindQueryBuilder } from "objection-find";
+
+// const $jsonRewrite = (row: any): object => {
+//   if (!row) {
+//     return row;
+//   }
+//
+//   Object.keys(row).map((column: string) => {
+//     const str = column.replace(/(?:-|_)+([^-_])/g, (_, b) => b.toUpperCase());
+//     const col = str.substr(0, 1).toLowerCase() + str.substr(1);
+//
+//     if (col === column) {
+//       return true;
+//     }
+//
+//     row[col] = row[column];
+//     delete row[column];
+//   });
+//
+//   return row;
+// };
 
 export class Model extends DbErrors(ObjectionModel) {
-  public static get columnNameMappers() {
-    return snakeCaseMappers();
-  }
-
-  /**
-   * Build search queries for models using HTTP query parameters.
-   *
-   * @see https://github.com/Vincit/objection-find
-   */
-  public static findQuery(): FindQueryBuilder {
-    return new FindQueryBuilder(this)
-      .specialParameter("eager", "includes")
-      .specialParameter("orderBy", "sort");
-  }
-
-  /**
-   * Exports this model as a JSON object.
-   *
-   * @todo(douggr): typing for `opt` was merged
-   *  in `Vincit/objection.js#1245`, waiting next release.
-   */
-  public toJSON(opt?: { shallow?: boolean; virtuals?: boolean }) {
-    return super.toJSON(opt);
-  }
-
   /**
    * Called before a model is inserted into the database.
    *
@@ -49,6 +43,7 @@ export class Model extends DbErrors(ObjectionModel) {
   public async $beforeInsert(
     queryContext: QueryContext,
   ): Promise<QueryContext> {
+    //
     // prettier-ignore
     return Promise.resolve(this.$beforeSave(queryContext))
       .then(() => super.$beforeInsert(queryContext));
@@ -66,6 +61,7 @@ export class Model extends DbErrors(ObjectionModel) {
     modelOptions: ModelOptions,
     queryContext: QueryContext,
   ): Promise<QueryContext> {
+    //
     // prettier-ignore
     return Promise.resolve(this.$beforeSave(queryContext, modelOptions))
       .then(() => super.$beforeUpdate(modelOptions, queryContext));
@@ -78,10 +74,11 @@ export class Model extends DbErrors(ObjectionModel) {
    * asynchronous stuff. You can also throw an exception to abort
    * the save and reject the query.
    */
-  protected async $beforeSave(
+  public async $beforeSave(
     queryContext: QueryContext,
     modelOptions?: ModelOptions,
   ): Promise<{ queryContext: QueryContext; modelOptions?: ModelOptions }> {
+    //
     // prettier-ignore
     return Promise.resolve({ queryContext, modelOptions });
   }

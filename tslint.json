@@ -4,6 +4,9 @@
     "tslint-eslint-rules",
     "tslint-consistent-codestyle"
   ],
+  "linterOptions": {
+    "exclude": ["**/*.js", "**/*.pug.transpiled.jsx"]
+  },
   "rules": {
     "arrow-parens": [true, "always"],
     "curly": true,
@@ -15,6 +18,7 @@
     "no-irregular-whitespace": true,
     "object-curly-spacing": [true, "always"],
     "prefer-const": true,
+    "quote-props": ["error", "consistent"],
     "semi": [
       "error",
       "always",

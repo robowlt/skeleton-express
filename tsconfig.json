@@ -2,7 +2,7 @@
   "compilerOptions": {
     "paths": { "*": ["types/*"] },
     "allowJs": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "declaration": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -17,6 +17,7 @@
     "target": "es2017",
     "typeRoots": ["node_modules/@types"]
   },
+  "files": ["types/global.d.ts"],
   "exclude": ["node_modules", "src/**/*.generated.ts", "src/**/*.spec.ts"],
   "include": ["src/**/*"]
 }
