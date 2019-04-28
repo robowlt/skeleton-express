@@ -3,7 +3,7 @@
  * Owlsome solutions. Owltstanding results.
  */
 
-import { ensureDir, existsSync, writeFileSync } from "fs-extra";
+import { ensureDir, writeFileSync } from "fs-extra";
 import { basename, dirname, resolve } from "path";
 import { knex } from "../src/knex";
 import { camelize } from "../src/string";
@@ -76,11 +76,11 @@ const TYPES: any = {
   typescript: {
     bool: "boolean",
     date: "Date | Raw",
-    int4: "number | Raw",
-    integer: "number | Raw",
-    text: "string | Raw",
-    timestamp: "Date | Raw",
-    uuid: "string | Raw",
+    int4: "number",
+    integer: "number",
+    text: "string",
+    timestamp: "Date | Raw | string",
+    uuid: "string",
   },
 };
 
@@ -117,13 +117,11 @@ async function generate(relname: string) {
         QueryBuilder,
         QueryContext,
         Raw,
+        raw,
         RelationMappings,
       } from "objection";
       import schema from '${pathname}${jsonpath}/${basename(filename)}';
       import { Model } from '${pathname}model';
-
-      /** @internal */
-      type QB = QueryBuilder<${classname}, ${classname}[], ${classname}[] | undefined>;
 
       export class ${classname} extends Model {
       /** @inheritdoc */
@@ -140,10 +138,15 @@ async function generate(relname: string) {
     `),
 
     template.push(`// [BEGIN columns]`);
+    let hasUpdatingTimespamp = false;
 
     rows.forEach((row) => {
       const $rowname = camelize(row.colname);
       const $rowtype = [];
+
+      if ("updatedAt" === $rowname) {
+        hasUpdatingTimespamp = true;
+      }
 
       if (row.type === "bool") {
         $rowtype.push("boolean");
@@ -192,7 +195,7 @@ async function generate(relname: string) {
         queryContext: QueryContext,
         modelOptions?: ModelOptions,
       ): Promise<{ queryContext: QueryContext; modelOptions?: ModelOptions }> {
-        //
+        //${hasUpdatingTimespamp ? '\nthis.updatedAt = raw("CLOCK_TIMESTAMP()")\n' : ""}
         // prettier-ignore
         return super.$beforeSave(queryContext, modelOptions);
       }

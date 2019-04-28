@@ -7,9 +7,6 @@ import * as Knex from "knex";
 import { knexSnakeCaseMappers } from "objection";
 import { APP_MODE, APP_PRODUCTION } from "./environment";
 
-// const { postProcessResponse } = knexSnakeCaseMappers();
-// const APP_COLUMNS_CACHE: { [column: string]: string } = {};
-
 const APP_KNEX_DEFAULTS: Knex.Config = {
   ...knexSnakeCaseMappers(),
   asyncStackTraces: !APP_PRODUCTION,

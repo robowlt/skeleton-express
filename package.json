@@ -26,10 +26,9 @@
     "objection": "^1.6.8",
     "objection-db-errors": "^1.1.1",
     "pg": "^7.10.0",
-    "pug": "^2.0.3",
-    "validator": "^10.11.0"
+    "pug": "^2.0.3"
   },
-  "description": "Optionated skeleton for Express + Objection.js + Typescript apps",
+  "description": "Optionated skeleton for Express, Objection.js, PostgreSQL and Typescript apps",
   "devDependencies": {
     "@commitlint/cli": "^7.5",
     "@commitlint/config-angular": "^7.5",
@@ -46,7 +45,6 @@
     "@types/node": "^11.13.7",
     "@types/nodemailer": "^4.6.7",
     "@types/pug": "^2.0.4",
-    "@types/validator": "^10.11.0",
     "@types/yargs": "^13.0.0",
     "chance": "^1.0.18",
     "concurrently": "^4.1",

@@ -11,26 +11,6 @@ import {
 } from "objection";
 import { DbErrors } from "objection-db-errors";
 
-// const $jsonRewrite = (row: any): object => {
-//   if (!row) {
-//     return row;
-//   }
-//
-//   Object.keys(row).map((column: string) => {
-//     const str = column.replace(/(?:-|_)+([^-_])/g, (_, b) => b.toUpperCase());
-//     const col = str.substr(0, 1).toLowerCase() + str.substr(1);
-//
-//     if (col === column) {
-//       return true;
-//     }
-//
-//     row[col] = row[column];
-//     delete row[column];
-//   });
-//
-//   return row;
-// };
-
 export class Model extends DbErrors(ObjectionModel) {
   /**
    * Called before a model is inserted into the database.
